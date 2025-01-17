@@ -1,7 +1,7 @@
 extern crate sdl2;
 extern crate gl;
 
-use std::{ffi::CString, fs, io, time::{Duration, Instant}};
+use std::{ffi::CString, fs, io, time::Instant};
 
 use cgmath::{perspective, Array, Deg, Matrix, Matrix4, Point3, Rad, Vector3};
 use graphics_playground::fps_counter::FpsCounter;
@@ -157,7 +157,7 @@ fn main()
         }
 
         let position = create_position_matrix(Vector3::new(0.0, 0.0, 0.0));
-        let rotation = create_rotation_matrix(0.0, 0.0, 0.0);
+        let rotation = create_rotation_matrix(0.0, start.elapsed().as_secs_f32() * 20.0, 0.0);
         let scale = create_scale_matrix(1.0);
         let model = scale * position * rotation;
         let view = create_view_matrix(Point3::new(pos_x, pos_y, pos_z), Vector3::new(0.0, 1.0, 0.0));
