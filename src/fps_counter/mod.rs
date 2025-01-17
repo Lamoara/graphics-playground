@@ -32,20 +32,24 @@ impl FpsCounter
         }
     }
 
-    pub fn frame(&mut self, is_limited: bool) {
+    pub fn frame(&mut self, is_limited: bool) 
+    {
         let now = Instant::now();
         self.delta_time = now.duration_since(self.last_frame_time);
     
-        if is_limited && self.delta_time < self.frame_duration 
+        let designated_time = self.frame_duration * (self.frame_count + 2) as u32;
+        let current_relative_time = self.last_fps_update.elapsed();
+
+        if is_limited && designated_time > current_relative_time
         {
-            thread::sleep(self.frame_duration - self.delta_time);
+            thread::sleep(designated_time - current_relative_time);
         }
     
         self.last_frame_time = Instant::now();
     
         self.frame_count += 1;
     
-        if self.last_fps_update.elapsed() >= Duration::from_secs(1) 
+        if current_relative_time >= Duration::from_secs(1) 
         {
             self.average_fps[self.last_index] = self.frame_count;
             self.last_index = (self.last_index + 1) % self.average_fps.len();
