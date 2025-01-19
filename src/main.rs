@@ -31,61 +31,7 @@ fn main()
     gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as *const _);
 
     // Vértices de un cubo centrado en (0.0, 0.0, 0.0)
-    let vertices: [f32; 108] = [
-        // Cara frontal
-        -0.5, -0.5,  0.5, // Vértice inferior izquierdo
-        0.5, -0.5,  0.5, // Vértice inferior derecho
-        0.5,  0.5,  0.5, // Vértice superior derecho
-
-        -0.5, -0.5,  0.5, // Vértice inferior izquierdo
-        0.5,  0.5,  0.5, // Vértice superior derecho
-        -0.5,  0.5,  0.5, // Vértice superior izquierdo
-
-        // Cara trasera
-        -0.5, -0.5, -0.5, // Vértice inferior izquierdo
-        -0.5,  0.5, -0.5, // Vértice superior izquierdo
-        0.5,  0.5, -0.5, // Vértice superior derecho
-
-        -0.5, -0.5, -0.5, // Vértice inferior izquierdo
-        0.5,  0.5, -0.5, // Vértice superior derecho
-        0.5, -0.5, -0.5, // Vértice inferior derecho
-
-        // Cara izquierda
-        -0.5, -0.5, -0.5, // Vértice inferior trasero izquierdo
-        -0.5, -0.5,  0.5, // Vértice inferior frontal izquierdo
-        -0.5,  0.5,  0.5, // Vértice superior frontal izquierdo
-
-        -0.5, -0.5, -0.5, // Vértice inferior trasero izquierdo
-        -0.5,  0.5,  0.5, // Vértice superior frontal izquierdo
-        -0.5,  0.5, -0.5, // Vértice superior trasero izquierdo
-
-        // Cara derecha
-        0.5, -0.5, -0.5, // Vértice inferior trasero derecho
-        0.5,  0.5,  0.5, // Vértice superior frontal derecho
-        0.5, -0.5,  0.5, // Vértice inferior frontal derecho
-
-        0.5, -0.5, -0.5, // Vértice inferior trasero derecho
-        0.5,  0.5, -0.5, // Vértice superior trasero derecho
-        0.5,  0.5,  0.5, // Vértice superior frontal derecho
-
-        // Cara superior
-        -0.5,  0.5, -0.5, // Vértice trasero izquierdo
-        -0.5,  0.5,  0.5, // Vértice frontal izquierdo
-        0.5,  0.5,  0.5, // Vértice frontal derecho
-
-        -0.5,  0.5, -0.5, // Vértice trasero izquierdo
-        0.5,  0.5,  0.5, // Vértice frontal derecho
-        0.5,  0.5, -0.5, // Vértice trasero derecho
-
-        // Cara inferior
-        -0.5, -0.5, -0.5, // Vértice trasero izquierdo
-        0.5, -0.5,  0.5, // Vértice frontal derecho
-        -0.5, -0.5,  0.5, // Vértice frontal izquierdo
-
-        -0.5, -0.5, -0.5, // Vértice trasero izquierdo
-        0.5, -0.5, -0.5, // Vértice trasero derecho
-        0.5, -0.5,  0.5, // Vértice frontal derecho
-    ];
+    let vertices = parse_obj("cube.obj").unwrap();
 
 
     let mut vbo = 0;
@@ -105,7 +51,7 @@ fn main()
             gl::STATIC_DRAW,
         );
 
-        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 3 * std::mem::size_of::<f32>() as i32, std::ptr::null());
+        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 8 * std::mem::size_of::<f32>() as i32, std::ptr::null());
         gl::EnableVertexAttribArray(0);
 
         gl::Enable(gl::CULL_FACE); // Habilita el culling
@@ -171,7 +117,7 @@ fn main()
             set_uniform_matrix(shader_program, "model", &model);
             set_uniform_matrix(shader_program, "view", &view);
             set_uniform_matrix(shader_program, "projection", &projection);
-            set_uniform_vec(shader_program, "camPos", &Vector3::new(pos_x, pos_y, pos_z));
+            set_uniform_vec(shader_program, "cameraPos", &Vector3::new(pos_x, pos_y, pos_z));
 
             gl::BindVertexArray(vao);
             gl::DrawArrays(gl::TRIANGLES, 0, (vertices.len()/3) as i32);
@@ -342,7 +288,7 @@ fn parse_obj(file_path: &str) -> Result<Vec<f32>, String> {
         if line.starts_with("vt ") {
             // Extraer los vértices
             let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() == 3 {
+            if parts.len() >= 3 {
                 let x: f32 = parts[1].parse().map_err(|e| format!("Error al parsear x: {}", e))?;
                 let y: f32 = parts[2].parse().map_err(|e| format!("Error al parsear y: {}", e))?;
                 
@@ -385,12 +331,12 @@ fn parse_obj(file_path: &str) -> Result<Vec<f32>, String> {
         {
             res.push(e);
         }
-
+        
         for e in normals[face[2]]
         {
             res.push(e);
         }
-
+        
         for e in textures[face[1]]
         {
             res.push(e);
