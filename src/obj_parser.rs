@@ -132,7 +132,7 @@ pub fn parse_obj(file_path: &str) -> Result<Vec<f32>, String> {
         }
     }
 
-    let mut res = Vec::new();
+    let mut res: Vec<f32> = Vec::new();
     for face in corrected_faces.iter()
     {
         for e in vertices[face[0]]

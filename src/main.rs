@@ -31,7 +31,7 @@ fn main()
     gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as *const _);
 
     // Vértices de un cubo centrado en (0.0, 0.0, 0.0)
-    let vertices = parse_obj("cube.obj").unwrap();
+    let vertices = parse_obj("flower.obj").unwrap();
 
 
     let mut vbo = 0;
@@ -72,7 +72,7 @@ fn main()
 
     let mut fps_counter = FpsCounter::new(60);
 
-    let (mut pos_x, mut pos_y, mut pos_z): (f32, f32, f32) = (0.0, 3.0, -5.0);
+    let (mut pos_x, mut pos_y, mut pos_z): (f32, f32, f32) = (0.0, 0.0, -5.0);
 
     // Bucle principal
     let mut event_pump = sdl_context.event_pump().unwrap();
@@ -125,6 +125,7 @@ fn main()
 
         window.gl_swap_window();
         fps_counter.frame(true);
+        println!("{}", fps_counter.average_fps());
     }
 }
 
@@ -233,7 +234,7 @@ fn create_scale_matrix(scale: f32) -> Matrix4<f32> {
 fn create_view_matrix(position: Point3<f32>, rotation: Vector3<f32>) -> Matrix4<f32> {
     Matrix4::look_at_rh(
         position, // Posición de la cámara
-        Point3::new(0.0 as f32 , 0.0 as f32, 0.0 as f32),
+        Point3::new(0.0 as f32 + position.x, 0.0 as f32 + position.y, 1.0 as f32 + position.z),
         Vector3::new(0.0, 1.0, 0.0), // El vector "arriba"
     )
 }
