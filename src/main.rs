@@ -72,7 +72,7 @@ fn main()
 
     let mut fps_counter = FpsCounter::new(60);
 
-    let (mut pos_x, mut pos_y, mut pos_z): (f32, f32, f32) = (0.0, 0.0, 0.0);
+    let (mut pos_x, mut pos_y, mut pos_z): (f32, f32, f32) = (0.0, 3.0, -5.0);
 
     // Bucle principal
     let mut event_pump = sdl_context.event_pump().unwrap();
@@ -308,9 +308,9 @@ fn parse_obj(file_path: &str) -> Result<Vec<f32>, String> {
                     
                     // Asegurarnos de que tenemos 3 partes para cada vértice (v/vt/vn)
                     if vertex_data.len() == 3 {
-                        let v_idx: usize = vertex_data[0].parse::<usize>().map_err(|e| format!("Error al parsear índice de vértice: {}", e))? - 1;
-                        let vt_idx: usize = vertex_data[1].parse::<usize>().map_err(|e| format!("Error al parsear índice de textura: {}", e))? - 1;
-                        let vn_idx: usize = vertex_data[2].parse::<usize>().map_err(|e| format!("Error al parsear índice de normal: {}", e))? - 1;
+                        let v_idx: usize = vertex_data[0].parse::<usize>().unwrap_or(1) - 1;
+                        let vt_idx: usize = vertex_data[1].parse::<usize>().unwrap_or(1) - 1;
+                        let vn_idx: usize = vertex_data[2].parse::<usize>().unwrap_or(1) - 1;
                         
                         // Agregar los índices de los vértices, texturas y normales
                         faces.push([v_idx, vt_idx, vn_idx]);
